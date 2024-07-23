@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const messageProcessingService_1 = require("./test/application/messageProcessingService");
 const mqttClient_1 = require("./test/infrastructure/mqttClient");
+const app_1 = __importDefault(require("./app"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const envFile = process.env.NODE_ENV === 'dev' ? '.env' : '.env.prod';
 dotenv_1.default.config({ path: envFile });
@@ -19,3 +20,8 @@ console.log(`Connecting to broker: ${brokerUrl}`);
 const mqttClient = new mqttClient_1.MqttClient(brokerUrl, options);
 mqttClient.messages$.subscribe(({ topic, message }) => (0, messageProcessingService_1.processMessage)(message, topic));
 topics.forEach(topic => mqttClient.subscribe(topic));
+const serverUrl = process.env.SERVER_URL || 'http://localhost';
+const serverPort = process.env.SERVER_PORT || 3000;
+app_1.default.listen(serverPort, () => {
+    console.log(`Server running at ${serverUrl}:${serverPort}`);
+});

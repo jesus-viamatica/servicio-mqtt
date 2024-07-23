@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processMessage = processMessage;
+const messageError_1 = require("./messageError");
 const messageHandler_1 = require("./messageHandler");
 const messageUtils_1 = require("./messageUtils");
 const messageHandler = new messageHandler_1.MessageHandler();
@@ -28,16 +29,24 @@ function processMessage(message, topic) {
                 return;
             }
             const response = yield messageHandler.handle(parsedMessage, topic);
-            console.log('Middleware response:', response.data);
+            if (!response) {
+                console.log('No se recibió respuesta del middleware para el mensaje:', message);
+                return;
+            }
+            console.log('Respuesta del middleware:', response.data);
             if (!parsedMessage.feedback) {
                 console.log('No se enviará feedback para el mensaje:', message);
                 return;
             }
             const feedbackResponse = yield messageHandler.sendFeedback(response.data, topic, parsedMessage.feedback);
-            console.log('Feedback response:', feedbackResponse.data);
+            if (feedbackResponse) {
+                console.log('Respuesta del feedback:', feedbackResponse.data);
+            }
         }
         catch (error) {
-            console.error('Error al procesar el mensaje:', message, error);
+            if (error instanceof Error) {
+                (0, messageError_1.messageError)(error.message, undefined, { message, topic });
+            }
         }
     });
 }

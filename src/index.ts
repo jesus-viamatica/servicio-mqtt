@@ -2,6 +2,7 @@
 import { processMessage } from "./test/application/messageProcessingService";
 
 import { MqttClient } from "./test/infrastructure/mqttClient";
+import app from './app';
 
 import dotenv from "dotenv";
 const envFile = process.env.NODE_ENV === 'dev' ? '.env' : '.env.prod';
@@ -21,3 +22,10 @@ const mqttClient = new MqttClient(brokerUrl, options);
 mqttClient.messages$.subscribe(({ topic, message }) => processMessage(message, topic));
 
 topics.forEach(topic => mqttClient.subscribe(topic));
+
+const serverUrl = process.env.SERVER_URL || 'http://localhost';
+const serverPort = process.env.SERVER_PORT || 3000;
+
+app.listen(serverPort, () => {
+  console.log(`Server running at ${serverUrl}:${serverPort}`);
+});

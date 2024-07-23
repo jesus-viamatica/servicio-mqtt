@@ -13,25 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageHandler = void 0;
+const axios_1 = require("axios");
 const dotenv_1 = __importDefault(require("dotenv"));
 const httpClient_1 = require("../infrastructure/httpClient");
-// export interface Message {
-//   source: string;
-//   destination: string;
-//   operation: string;
-//   verb: string;
-//   path: string;
-//   body: Body;
-//   feedback: Feedback;
-// }
-// export interface Feedback {
-//   source: string;
-//   destination: string;
-//   operation: string;
-//   verb: string;
-//   path: string;
-//   body: string;
-// }
+const messageError_1 = require("./messageError");
 dotenv_1.default.config();
 class MessageHandler {
     constructor() {
@@ -40,8 +25,31 @@ class MessageHandler {
     }
     handle(message, topic) {
         return __awaiter(this, void 0, void 0, function* () {
-            const response = yield this.sendHttpRequest(message.verb, `${this.endPoint}/${topic}`, message.body);
-            return response;
+            try {
+                const response = yield this.sendHttpRequest(message.verb, `${this.endPoint}/${topic}`, message);
+                return response;
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    (0, messageError_1.messageError)(error.message, 500, error.message);
+                }
+                throw error;
+            }
+        });
+    }
+    sendFeedback(data, topic, feedback) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                feedback.body = data;
+                console.log('Enviando feedback:', feedback);
+                const response = yield this.sendHttpRequest(feedback.verb, `${this.endPoint}/${topic}`, feedback);
+                return response;
+            }
+            catch (error) {
+                if (error instanceof Error) {
+                    (0, messageError_1.messageError)(error.message, 500, error);
+                }
+            }
         });
     }
     sendHttpRequest(verb, path, body) {
@@ -49,27 +57,43 @@ class MessageHandler {
             const headers = {
                 "Content-Type": "application/json",
             };
-            switch (verb.toUpperCase()) {
-                case 'POST':
-                    return yield this.httpClient.post(path, body, headers);
-                case 'PATCH':
-                    return yield this.httpClient.patch(path, body, headers);
-                case 'GET':
-                    return yield this.httpClient.get(path, { headers });
-                case 'PUT':
-                    return yield this.httpClient.put(path, body, headers);
-                case 'DELETE':
-                    return yield this.httpClient.delete(path, { headers });
-                default:
-                    throw new Error(`Unsupported HTTP verb: ${verb}`);
+            const startTime = Date.now();
+            try {
+                let response;
+                switch (verb.toUpperCase()) {
+                    case 'POST':
+                        response = yield this.httpClient.post(path, body, headers);
+                        break;
+                    case 'PATCH':
+                        response = yield this.httpClient.patch(path, body, headers);
+                        break;
+                    case 'GET':
+                        response = yield this.httpClient.get(path, headers);
+                        break;
+                    case 'PUT':
+                        response = yield this.httpClient.put(path, body, headers);
+                        break;
+                    case 'DELETE':
+                        response = yield this.httpClient.delete(path, headers);
+                        break;
+                    default:
+                        throw new Error(`Unsupported HTTP verb: ${verb}`);
+                }
+                const duration = calculateDuration(startTime);
+                console.log(`Tiempo de respuesta HTTP: ${duration} segundos`);
+                return response;
             }
-        });
-    }
-    sendFeedback(data, topic, feedback) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const reponse = yield this.sendHttpRequest(feedback.verb, `${this.endPoint}/${topic}`, data);
-            return reponse;
+            catch (error) {
+                const duration = calculateDuration(startTime);
+                if (error instanceof axios_1.AxiosError) {
+                    (0, messageError_1.messageError)(error.message, duration, error.name);
+                }
+            }
         });
     }
 }
 exports.MessageHandler = MessageHandler;
+function calculateDuration(startTime) {
+    const endTime = Date.now();
+    return (endTime - startTime) / 1000;
+}

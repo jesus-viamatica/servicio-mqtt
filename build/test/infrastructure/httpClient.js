@@ -18,41 +18,41 @@ class HttpClient {
     post(url, body, headers) {
         return __awaiter(this, void 0, void 0, function* () {
             const config = {
-                headers: headers
+                headers: headers,
             };
-            return axios_1.default.post(url, body, config);
+            return yield axios_1.default.post(url, body, config);
         });
     }
     get(url, headers) {
         return __awaiter(this, void 0, void 0, function* () {
             const config = {
-                headers: headers
+                headers: headers,
             };
-            return axios_1.default.get(url, config);
+            return yield axios_1.default.get(url, config);
         });
     }
     put(url, body, headers) {
         return __awaiter(this, void 0, void 0, function* () {
             const config = {
-                headers: headers
+                headers: headers,
             };
-            return axios_1.default.put(url, body, config);
+            return yield axios_1.default.put(url, body, config);
         });
     }
     delete(url, headers) {
         return __awaiter(this, void 0, void 0, function* () {
             const config = {
-                headers: headers
+                headers: headers,
             };
-            return axios_1.default.delete(url, config);
+            return yield axios_1.default.delete(url, config);
         });
     }
     patch(url, body, headers) {
         return __awaiter(this, void 0, void 0, function* () {
             const config = {
-                headers: headers
+                headers: headers,
             };
-            return axios_1.default.patch(url, body, config);
+            return yield axios_1.default.patch(url, body, config);
         });
     }
 }
