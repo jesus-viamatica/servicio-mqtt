@@ -3,14 +3,14 @@ import { Subject } from 'rxjs';
 
 export class MqttClient {
   private client: Client;
-  private messageSubject = new Subject<string>();
+  private messageSubject = new Subject<{ topic: string, message: string }>();
 
   constructor(brokerUrl: string, options: IClientOptions) {
     this.client = connect(brokerUrl, options);
 
     this.client.on('message', (topic, message) => {
       console.log(`Received message on ${topic}:`, message.toString());
-      this.messageSubject.next(message.toString());
+      this.messageSubject.next({ topic, message: message.toString() });
     });
 
     this.client.on('connect', () => console.log('Connected to MQTT Broker.'));

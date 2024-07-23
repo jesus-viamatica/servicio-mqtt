@@ -13,7 +13,7 @@ exports.processMessage = processMessage;
 const messageHandler_1 = require("./messageHandler");
 const messageUtils_1 = require("./messageUtils");
 const messageHandler = new messageHandler_1.MessageHandler();
-function processMessage(message) {
+function processMessage(message, topic) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const isJson = message.trim().startsWith('{') && message.trim().endsWith('}');
@@ -23,8 +23,18 @@ function processMessage(message) {
                 console.error('El mensaje no tiene la estructura esperada:', message);
                 return;
             }
-            const response = yield messageHandler.handle(parsedMessage);
+            if (parsedMessage.verb === 'GET' || parsedMessage.verb === 'DELETE') {
+                console.log('Consulta recibida, no se encolará:', message);
+                return;
+            }
+            const response = yield messageHandler.handle(parsedMessage, topic);
             console.log('Middleware response:', response.data);
+            if (!parsedMessage.feedback) {
+                console.log('No se enviará feedback para el mensaje:', message);
+                return;
+            }
+            const feedbackResponse = yield messageHandler.sendFeedback(response.data, topic, parsedMessage.feedback);
+            console.log('Feedback response:', feedbackResponse.data);
         }
         catch (error) {
             console.error('Error al procesar el mensaje:', message, error);

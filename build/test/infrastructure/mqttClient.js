@@ -9,7 +9,7 @@ class MqttClient {
         this.client = (0, mqtt_1.connect)(brokerUrl, options);
         this.client.on('message', (topic, message) => {
             console.log(`Received message on ${topic}:`, message.toString());
-            this.messageSubject.next(message.toString());
+            this.messageSubject.next({ topic, message: message.toString() });
         });
         this.client.on('connect', () => console.log('Connected to MQTT Broker.'));
         this.client.on('error', (error) => console.error('Connection error:', error));

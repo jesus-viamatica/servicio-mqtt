@@ -1,11 +1,20 @@
 
 export interface Message {
   source: string;
-  ip: string;
-  port: number;
-  rootPath: string;
-  ssl: boolean;
-  timeout: number;
-  endpoint: string;
+  destination: string;
+  operation: string;
+  verb: string;
+  path: string;
+  body: Body;
+  feedback: Feedback;
 }
-    
+
+export interface Feedback {
+  source: string;
+  destination: string;
+  operation: string;
+  verb: string;
+  path: string;
+  body: any;
+}
+

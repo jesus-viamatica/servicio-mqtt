@@ -14,7 +14,8 @@ const options = {
     password: process.env.MQTT_PASSWORD,
     clientId: process.env.MQTT_CLIENT_ID
 };
+const topics = (process.env.MQTT_TOPICS || "").split(",");
 console.log(`Connecting to broker: ${brokerUrl}`);
 const mqttClient = new mqttClient_1.MqttClient(brokerUrl, options);
-mqttClient.messages$.subscribe(message => (0, messageProcessingService_1.processMessage)(message));
-mqttClient.subscribe('testtopic');
+mqttClient.messages$.subscribe(({ topic, message }) => (0, messageProcessingService_1.processMessage)(message, topic));
+topics.forEach(topic => mqttClient.subscribe(topic));
