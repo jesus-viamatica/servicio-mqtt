@@ -9,7 +9,7 @@ const options = {
   password: 'mosquitto',
   clientId: 'mqttx_e9c7884d'
 };
-const mqttClient = new MqttClient(brokerUrl, options);
 
+const mqttClient = new MqttClient(brokerUrl, options);
 mqttClient.messages$.subscribe(message => processMessage(message));
 mqttClient.subscribe('testtopic');

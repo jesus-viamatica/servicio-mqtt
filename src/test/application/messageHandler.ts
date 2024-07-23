@@ -9,8 +9,7 @@ export class MessageHandler {
   }
 
   async handle(message: Message) {
-
-    const url = `${message.ssl ? 'https' : 'http'}://${message.ip}:${message.port}${message.rootPath}/dummy`;
+    const url = `${message.ssl ? 'https' : 'http'}://${message.ip}:${message.port}${message.rootPath}${message.endpoint}`;
     return this.httpClient.post(url, {}, { 'Content-Type': 'application/json' });
   }
 }

@@ -6,5 +6,6 @@ export interface Message {
   rootPath: string;
   ssl: boolean;
   timeout: number;
+  endpoint: string;
 }
     
