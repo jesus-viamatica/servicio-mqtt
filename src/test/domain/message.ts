@@ -10,6 +10,7 @@ export interface Message {
 }
 
 export interface Feedback {
+  topic: string;
   source: string;
   destination: string;
   operation: string;

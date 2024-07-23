@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.convertMessageToArray = convertMessageToArray;
+exports.convertMessageToArray = void 0;
 function convertMessageToArray(message) {
     let trimmedMessage = message.trim().replace(/^\{\s*/, '').replace(/\s*\}$/, '');
     let values = trimmedMessage.split(',').map(value => {
@@ -13,3 +13,4 @@ function convertMessageToArray(message) {
     });
     return `[${values.join(',')}]`;
 }
+exports.convertMessageToArray = convertMessageToArray;

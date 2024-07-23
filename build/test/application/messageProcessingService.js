@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.processMessage = processMessage;
+exports.processMessage = void 0;
 const messageError_1 = require("./messageError");
 const messageHandler_1 = require("./messageHandler");
 const messageUtils_1 = require("./messageUtils");
@@ -50,3 +50,4 @@ function processMessage(message, topic) {
         }
     });
 }
+exports.processMessage = processMessage;

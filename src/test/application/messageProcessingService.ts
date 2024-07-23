@@ -32,7 +32,7 @@ export async function processMessage(message: string, topic: string) {
     }
 
    
-    const feedbackResponse = await messageHandler.sendFeedback(response.data, topic, parsedMessage.feedback);
+    const feedbackResponse = await messageHandler.sendFeedback(response.data, parsedMessage.feedback.topic, parsedMessage.feedback);
 
 
     if (feedbackResponse) {

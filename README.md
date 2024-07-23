@@ -10,6 +10,6 @@ Para levantar el software en un entorno local, debe realizar los siguientes paso
 ### Docker componse
 
 * Levante la aplicación en el entorno de desarrollo:
-`docker-compose up app-dev`
+`docker-compose up --build app-dev`
 * Levante la aplicación en el entorno de producción:
-`docker-compose up app-prod`
+`docker-compose up --build app-prod`
