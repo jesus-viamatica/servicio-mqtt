@@ -1,13 +1,16 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MqttClient = void 0;
-const mqtt_1 = require("mqtt");
+const mqtt_1 = __importDefault(require("mqtt"));
 const rxjs_1 = require("rxjs");
 const logger_1 = require("../../logger");
 class MqttClient {
     constructor(brokerUrl, options) {
         this.messageSubject = new rxjs_1.Subject();
-        this.client = (0, mqtt_1.connect)(brokerUrl, options);
+        this.client = mqtt_1.default.connect(brokerUrl, options);
         this.client.on('message', (topic, message) => {
             logger_1.logger.info(`Received message on ${topic}: ${message.toString()}`);
             this.messageSubject.next({ topic, message: message.toString() });

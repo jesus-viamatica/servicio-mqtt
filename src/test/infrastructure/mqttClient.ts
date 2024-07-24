@@ -1,4 +1,4 @@
-import { connect, IClientOptions, MqttClient as Client } from 'mqtt';
+import mqtt, { connect, IClientOptions, MqttClient as Client } from 'mqtt';
 import { Subject } from 'rxjs';
 import { logger } from '../../logger';
 
@@ -7,7 +7,7 @@ export class MqttClient {
   private messageSubject = new Subject<{ topic: string, message: string }>();
 
   constructor(brokerUrl: string, options: IClientOptions) {
-    this.client = connect(brokerUrl, options);
+    this.client = mqtt.connect(brokerUrl, options);
 
     this.client.on('message', (topic, message) => {
       logger.info(`Received message on ${topic}: ${message.toString()}`);
