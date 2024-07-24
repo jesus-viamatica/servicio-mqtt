@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processMessage = void 0;
+const logger_1 = require("../../logger");
 const messageError_1 = require("./messageError");
 const messageHandler_1 = require("./messageHandler");
 const messageUtils_1 = require("./messageUtils");
@@ -21,26 +22,26 @@ function processMessage(message, topic) {
             const cleanedMessage = isJson ? message : (0, messageUtils_1.convertMessageToArray)(message);
             const parsedMessage = JSON.parse(cleanedMessage);
             if (!parsedMessage) {
-                console.error('El mensaje no tiene la estructura esperada:', message);
+                logger_1.logger.error('El mensaje no tiene la estructura esperada:', message);
                 return;
             }
             if (parsedMessage.verb === 'GET' || parsedMessage.verb === 'DELETE') {
-                console.log('Consulta recibida, no se encolará:', message);
+                logger_1.logger.info('Consulta recibida, no se encolará:', message);
                 return;
             }
             const response = yield messageHandler.handle(parsedMessage, topic);
             if (!response) {
-                console.log('No se recibió respuesta del middleware para el mensaje:', message);
+                logger_1.logger.error('No se recibió respuesta del middleware para el mensaje:', message);
                 return;
             }
             console.log('Respuesta del middleware:', response.data);
             if (!parsedMessage.feedback) {
-                console.log('No se enviará feedback para el mensaje:', message);
+                logger_1.logger.info('No se enviará feedback para el mensaje:', message);
                 return;
             }
-            const feedbackResponse = yield messageHandler.sendFeedback(response.data, topic, parsedMessage.feedback);
+            const feedbackResponse = yield messageHandler.sendFeedback(response.data, parsedMessage.feedback.topic, parsedMessage.feedback);
             if (feedbackResponse) {
-                console.log('Respuesta del feedback:', feedbackResponse.data);
+                logger_1.logger.info('Feedback enviado:', feedbackResponse.data);
             }
         }
         catch (error) {

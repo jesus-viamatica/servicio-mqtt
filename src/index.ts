@@ -5,6 +5,8 @@ import { MqttClient } from "./test/infrastructure/mqttClient";
 import app from './app';
 
 import dotenv from "dotenv";
+import { logger } from "./logger";
+
 const envFile = process.env.NODE_ENV === 'dev' ? '.env' : '.env.prod';
 dotenv.config({ path: envFile });
 
@@ -16,7 +18,7 @@ const options = {
 };
 const topics = (process.env.MQTT_TOPICS || "").split(",");
 
-console.log(`Connecting to broker: ${brokerUrl}`);
+logger.info(`Connecting to broker: ${brokerUrl}`);
 const mqttClient = new MqttClient(brokerUrl, options);
 
 mqttClient.messages$.subscribe(({ topic, message }) => processMessage(message, topic));
@@ -27,5 +29,5 @@ const serverUrl = process.env.SERVER_URL || 'http://localhost';
 const serverPort = process.env.SERVER_PORT || 3000;
 
 app.listen(serverPort, () => {
-  console.log(`Server running at ${serverUrl}:${serverPort}`);
+  logger.info(`Server running at ${serverUrl}:${serverPort}`);
 });

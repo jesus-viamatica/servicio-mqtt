@@ -17,6 +17,7 @@ const axios_1 = require("axios");
 const dotenv_1 = __importDefault(require("dotenv"));
 const httpClient_1 = require("../infrastructure/httpClient");
 const messageError_1 = require("./messageError");
+const logger_1 = require("../../logger");
 dotenv_1.default.config();
 class MessageHandler {
     constructor() {
@@ -41,7 +42,7 @@ class MessageHandler {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 feedback.body = data;
-                console.log('Enviando feedback:', feedback);
+                logger_1.logger.info(`Enviando feedback: ${feedback}`);
                 const response = yield this.sendHttpRequest(feedback.verb, `${this.endPoint}/${topic}`, feedback);
                 return response;
             }
@@ -80,7 +81,7 @@ class MessageHandler {
                         throw new Error(`Unsupported HTTP verb: ${verb}`);
                 }
                 const duration = calculateDuration(startTime);
-                console.log(`Tiempo de respuesta HTTP: ${duration} segundos`);
+                logger_1.logger.info(`HTTP request to ${path} completed in ${duration} seconds`, { response });
                 return response;
             }
             catch (error) {

@@ -4,6 +4,7 @@ import { Feedback, Message } from "../domain/message";
 import dotenv from "dotenv";
 import { HttpClient } from "../infrastructure/httpClient";
 import { messageError } from "./messageError";
+import { logger } from "../../logger";
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ export class MessageHandler {
   async sendFeedback(data: any, topic: string, feedback: Feedback) {
     try {
       feedback.body = data;
-      console.log('Enviando feedback:', feedback);
+      logger.info(`Enviando feedback: ${feedback}`);
       const response = await this.sendHttpRequest(feedback.verb, `${this.endPoint}/${topic}`, feedback);
       return response;
       
@@ -73,7 +74,7 @@ export class MessageHandler {
           throw new Error(`Unsupported HTTP verb: ${verb}`);
       }
       const duration = calculateDuration(startTime);
-      console.log(`Tiempo de respuesta HTTP: ${duration} segundos`);
+      logger.info(`HTTP request to ${path} completed in ${duration} seconds`, { response });
       return response;
     } catch (error) {
       const duration = calculateDuration(startTime);

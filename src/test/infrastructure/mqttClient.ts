@@ -1,5 +1,6 @@
 import { connect, IClientOptions, MqttClient as Client } from 'mqtt';
 import { Subject } from 'rxjs';
+import { logger } from '../../logger';
 
 export class MqttClient {
   private client: Client;
@@ -9,21 +10,21 @@ export class MqttClient {
     this.client = connect(brokerUrl, options);
 
     this.client.on('message', (topic, message) => {
-      console.log(`Received message on ${topic}:`, message.toString());
+      logger.info(`Received message on ${topic}: ${message.toString()}`);
       this.messageSubject.next({ topic, message: message.toString() });
     });
 
-    this.client.on('connect', () => console.log('Connected to MQTT Broker.'));
-    this.client.on('error', (error) => console.error('Connection error:', error));
-    this.client.on('reconnect', () => console.log('Reconnecting...'));
+    this.client.on('connect', () => logger.info('Connected to broker'));
+    this.client.on('error', (error) => logger.error('Error:', error));
+    this.client.on('reconnect', () => logger.info('Reconnecting to broker'));
   }
 
   subscribe(topic: string) {
     this.client.subscribe(topic, (err) => {
       if (err) {
-        console.error(`Failed to subscribe to ${topic}:`, err);
+        logger.error(`Failed to subscribe to ${topic}: ${err}`);
       } else {
-        console.log(`Subscribed to ${topic}`);
+        logger.info(`Subscribed to ${topic}`);
       }
     });
   }

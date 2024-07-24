@@ -1,3 +1,5 @@
+
+import { logger } from "../../logger";
 import { Message } from "../domain/message";
 import { messageError } from "./messageError";
 import { MessageHandler } from "./messageHandler";
@@ -11,23 +13,23 @@ export async function processMessage(message: string, topic: string) {
     const parsedMessage: Message = JSON.parse(cleanedMessage);
     
     if (!parsedMessage) {
-        console.error('El mensaje no tiene la estructura esperada:', message);
+        logger.error('El mensaje no tiene la estructura esperada:', message);
         return;
     }
     if (parsedMessage.verb === 'GET' || parsedMessage.verb === 'DELETE') {
-        console.log('Consulta recibida, no se encolará:', message);
+        logger.info('Consulta recibida, no se encolará:', message);
         return;
     }
 
     const response = await messageHandler.handle(parsedMessage, topic);
     if (!response) {
-        console.log('No se recibió respuesta del middleware para el mensaje:', message);
+        logger.error('No se recibió respuesta del middleware para el mensaje:', message);
         return;
     }
     console.log('Respuesta del middleware:', response.data);
 
     if (!parsedMessage.feedback) {
-        console.log('No se enviará feedback para el mensaje:', message);
+        logger.info('No se enviará feedback para el mensaje:', message);
         return;
     }
 
@@ -36,7 +38,7 @@ export async function processMessage(message: string, topic: string) {
 
 
     if (feedbackResponse) {
-      console.log('Respuesta del feedback:', feedbackResponse.data);
+      logger.info('Feedback enviado:', feedbackResponse.data);
     } 
 
   } catch (error) {
