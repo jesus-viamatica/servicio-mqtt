@@ -1,9 +1,11 @@
-
 import { Server } from 'http';
 import { v4 as uuidv4 } from 'uuid';
 import app from './app'; 
 import { logger } from './logger';
 import { MqttClient } from './test/infrastructure/mqttClient';
+import dotenv from 'dotenv';
+
+dotenv.config({path: '.env'});
 
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mocked-uuid'),
@@ -47,47 +49,48 @@ describe('Index Module', () => {
   let server: Server;
 
   beforeAll(() => {
-    const brokerUrl = 'mqtt://broker.emqx.io:1883';
+    const brokerUrl = `${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`;
     const options = {
-      username: 'mosquitto',
-      password: 'mosquitto',
-      clientId: `mqtt_${uuidv4()}`,
+      username: process.env.MQTT_USERNAME,
+      password: process.env.MQTT_PASSWORD,
+      clientId: uuidv4(), // Asegurarse de que uuidv4 se llame aquí
     };
 
     logger.info(`Connecting to broker: ${brokerUrl}`);
     new MqttClient(brokerUrl, options);
 
-    server = app.listen(3000, () => {
-      logger.info(`Server running at http://localhost:3000`);
+    server = app.listen(Number(process.env.SERVER_PORT), () => {
+      logger.info(`Server running at ${process.env.SERVER_URL}:${process.env.SERVER_PORT}`);
     });
   });
 
   afterAll(() => {
     server.close();
   });
+
   it('should create clientId with correct UUID', () => {
     expect(uuidv4).toHaveBeenCalled();
     expect(MqttClient).toHaveBeenCalledWith(
       expect.any(String),
       expect.objectContaining({
-        clientId: 'mqtt_mocked-uuid',
+        clientId: 'mocked-uuid',
       })
     );
   });
+
   it('should initialize MQTT client with correct parameters', () => {
     expect(MqttClient).toHaveBeenCalledWith(
-      'mqtt://broker.emqx.io:1883',
+      `${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`,
       {
-        username: 'mosquitto',
-        password: 'mosquitto',
-        clientId: 'mqtt_mocked-uuid',
+        username: process.env.MQTT_USERNAME,
+        password: process.env.MQTT_PASSWORD,
+        clientId: 'mocked-uuid',
       }
     );
   });
 
   it('should start the server on the correct port', () => {
-    expect(app.listen).toHaveBeenCalledWith(3000, expect.any(Function));
+    const serverPort = Number(process.env.SERVER_PORT) || 3000; 
+    expect(app.listen).toHaveBeenCalledWith(serverPort, expect.any(Function));
   });
-
-
 });
