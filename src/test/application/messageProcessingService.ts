@@ -33,10 +33,7 @@ export async function processMessage(message: string, topic: string) {
         return;
     }
 
-   
     const feedbackResponse = await messageHandler.sendFeedback(response.data, parsedMessage.feedback.topic, parsedMessage.feedback);
-
-
     if (feedbackResponse) {
       logger.info('Feedback enviado:', feedbackResponse.data);
     } 
