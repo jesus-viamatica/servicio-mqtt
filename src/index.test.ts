@@ -1,9 +1,8 @@
-import request from 'supertest';
+
 import { Server } from 'http';
 import { v4 as uuidv4 } from 'uuid';
 import app from './app'; 
 import { logger } from './logger';
-import { processMessage } from './test/application/messageProcessingService';
 import { MqttClient } from './test/infrastructure/mqttClient';
 
 jest.mock('uuid', () => ({
@@ -56,7 +55,7 @@ describe('Index Module', () => {
     };
 
     logger.info(`Connecting to broker: ${brokerUrl}`);
-    const mqttClient = new MqttClient(brokerUrl, options);
+    new MqttClient(brokerUrl, options);
 
     server = app.listen(3000, () => {
       logger.info(`Server running at http://localhost:3000`);
