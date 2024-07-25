@@ -8,13 +8,14 @@ const mqttClient_1 = require("./test/infrastructure/mqttClient");
 const app_1 = __importDefault(require("./app"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const logger_1 = require("./logger");
+const uuid_1 = require("uuid");
 const envFile = process.env.NODE_ENV === 'dev' ? '.env' : '.env.prod';
 dotenv_1.default.config({ path: envFile });
 const brokerUrl = `${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`;
 const options = {
     username: process.env.MQTT_USERNAME,
     password: process.env.MQTT_PASSWORD,
-    clientId: process.env.MQTT_CLIENT_ID
+    clientId: `mqtt_${(0, uuid_1.v4)()}`,
 };
 const topics = (process.env.MQTT_TOPICS || "").split(",");
 logger_1.logger.info(`Connecting to broker: ${brokerUrl}`);

@@ -6,6 +6,8 @@ import app from './app';
 
 import dotenv from "dotenv";
 import { logger } from "./logger";
+import { v4 as uuidv4 } from 'uuid'; 
+
 
 const envFile = process.env.NODE_ENV === 'dev' ? '.env' : '.env.prod';
 dotenv.config({ path: envFile });
@@ -14,7 +16,7 @@ const brokerUrl = `${process.env.MQTT_HOST}:${process.env.MQTT_PORT}`;
 const options = {
   username: process.env.MQTT_USERNAME,
   password: process.env.MQTT_PASSWORD,
-  clientId: process.env.MQTT_CLIENT_ID
+  clientId: `mqtt_${uuidv4()}`,
 };
 const topics = (process.env.MQTT_TOPICS || "").split(",");
 
